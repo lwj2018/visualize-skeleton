@@ -36,7 +36,7 @@ const int LENGTH = 176;
 const int NUM_OF_JOINTS = 137;
 const int D = 6;
 const int NUM_OF_VIEW_JOINTS = 127;
-const int NUM_OF_LINE_PAIRS = 14;
+const int NUM_OF_LINE_PAIRS = 54;
 
 int main()
 {
@@ -54,10 +54,10 @@ int main()
     std::ifstream in2("/Users/liweijie/projects/visualize-skeleton/line_indices.data", 
             std::ios::in | std::ios::binary);
     in2.read((char *) &line_indices, sizeof line_indices);   
-    for (int i = 0; i < LENGTH*NUM_OF_LINE_PAIRS; i++)
-    {
-        std::cout<<line_indices[2*i]<<" "<<line_indices[2*i+1]<<std::endl;
-    }
+    // for (int i = 0; i < LENGTH*NUM_OF_LINE_PAIRS; i++)
+    // {
+    //     std::cout<<line_indices[2*i]<<" "<<line_indices[2*i+1]<<std::endl;
+    // }
     
     // glfw: initialize and configure
     // ------------------------------
@@ -112,6 +112,7 @@ int main()
     glGenBuffers(1, &VBO);
     glGenBuffers(2, EBOs);
 
+    // Settins for lines saved in VAOs[0]
     glBindVertexArray(VAOs[0]);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -128,6 +129,7 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    // Settings for points saved in VAOs[1]
     glBindVertexArray(VAOs[1]);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -150,7 +152,19 @@ int main()
 
     // !!!! This line make sure point size can be set by variable gl_PointSize in shader !!!!
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
 
+    GLfloat aliasedLineWidthRange[2];
+    GLfloat antialiasedLineWidthRange[2];
+    GLfloat granularity;
+
+    glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, aliasedLineWidthRange);
+    glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, antialiasedLineWidthRange);
+    glGetFloatv(GL_SMOOTH_LINE_WIDTH_GRANULARITY, &granularity);
+    std::cout<<"Aliased line width range: "<<aliasedLineWidthRange[0]<<" to "<<aliasedLineWidthRange[1]<<std::endl;
+    std::cout<<"Antialised line width range: "<<antialiasedLineWidthRange[0]<<" to "<<antialiasedLineWidthRange[1]<<std::endl;
+    std::cout<<"Granularity: "<<granularity;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -181,7 +195,6 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
 
-        glLineWidth(10.0f);
         // render lines
         glBindVertexArray(VAOs[0]);
         glDrawElements(GL_LINES, LENGTH*NUM_OF_LINE_PAIRS*2, GL_UNSIGNED_INT, 0);
