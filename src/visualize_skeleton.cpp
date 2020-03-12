@@ -181,15 +181,14 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
 
+        glLineWidth(10.0f);
         // render lines
         glBindVertexArray(VAOs[0]);
-        // glDrawArrays(GL_LINES, 0, LENGTH*NUM_OF_LINE_PAIRS*2);
         glDrawElements(GL_LINES, LENGTH*NUM_OF_LINE_PAIRS*2, GL_UNSIGNED_INT, 0);
         
-        // render lines
-        glLineWidth(10.0f);
-        glBindVertexArray(VAOs[1]);
-        glDrawArrays(GL_POINTS, 0, LENGTH*NUM_OF_VIEW_JOINTS);
+        // render points
+        // glBindVertexArray(VAOs[1]);
+        // glDrawArrays(GL_POINTS, 0, LENGTH*NUM_OF_VIEW_JOINTS);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
